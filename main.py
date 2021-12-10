@@ -3,11 +3,10 @@ import time
 
 
 #Clearing Terminal of old text
-x=20
-while x > 0:
+zz=20
+while zz > 0:
     print(" ")
-    x -= 1
-#
+    zz -= 1
 
 
 class Character:
@@ -54,9 +53,6 @@ TownName = input("You arrive at the Drunken Dwarf, a pub on the outskirts of ___
 print(f"You arrive at the Drunken Dwarf, a pub on the outskirts of {TownName}.")
 print("You walk inside and see the bustling scene of travelers. The bartender looks towards you.")
 Character_Name = input("Hey, welcome back, I remember you! You're ___!: (Character Name) ")
-# NPC's will refer back to the player as {Character_Name}
-
-
 
 
 
@@ -159,18 +155,17 @@ while Character_Alive == True:
                     in_combat = False
                     break        
 
-                if action == "quit":
+                if action == "quit": ##### TESTING PURPOSES TO BREAK #####
                     quit()
 
             else:
                 
                 if character.health <= 0:
                     print("You have died! You must restart your adventure.")
-                    quit()
-
+                    Character_Alive = False
+                    break
 
                 if monster.health <= 0:
-                    time.sleep(1)
                     print(f"You won the fight! You gain {monster.reward} gold!")
                     print(" ")
                     print("Out of Combat")
@@ -180,11 +175,7 @@ while Character_Alive == True:
                     
                     character.gold = round((character.gold + (monster.reward * character.gold_gain)), 2)
                     in_combat = False
-                    
         pass
-
-
-
 
 
     if action == "shop":
@@ -313,7 +304,7 @@ random_death_message = random.randint(1, 4)
 if random_death_message == 1:
     random_death_message = "from a heart attack!"
 if random_death_message == 2:
-        random_death_message = "from to a feral kitten! Yikes."
+        random_death_message = "from a feral kitten! Yikes."
 if random_death_message == 3:
     random_death_message = "by being smothered under the biggest ball of yarn."
 if random_death_message == 4:
