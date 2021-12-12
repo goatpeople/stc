@@ -10,7 +10,9 @@ while zz > 0:
 
 
 class Character:
-    def __init__(self, level, health, max_health, armor, priority, min_attack, max_attack, gold, gold_gain):
+    def __init__(self, name, hometown, level, health, max_health, armor, priority, min_attack, max_attack, gold, gold_gain):
+        self.name = name   
+        self.hometown = hometown     
         self.level = level
         self.health = health
         self.max_health = max_health
@@ -20,10 +22,11 @@ class Character:
         self.max_attack = max_attack
         self.gold = gold
         self.gold_gain = gold_gain
-character = Character(level = 1, health = 50, max_health = 50, armor = 0, priority = 500, min_attack = 40, max_attack = 50, gold = 500, gold_gain = 1)
+character = Character(name = "Default", hometown = "Default", level = 1, health = 50, max_health = 50, armor = 0, priority = 500, min_attack = 40, max_attack = 50, gold = 500, gold_gain = 1)
 
 class Monster:
-    def __init__(self, level, health, max_health, armor, priority, min_attack, max_attack, reward):
+    def __init__(self, name, level, health, max_health, armor, priority, min_attack, max_attack, reward):
+        self.name = name
         self.level = level
         self.health = health
         self.max_health = max_health
@@ -32,7 +35,7 @@ class Monster:
         self.min_attack = min_attack
         self.max_attack = max_attack
         self.reward = reward
-monster = Monster(level = 1, health = 10, max_health = 10, armor = 0, priority = 5, min_attack = 1, max_attack = 5, reward = 1)  
+monster = Monster(name = "Monster", level = 1, health = 10, max_health = 10, armor = 0, priority = 5, min_attack = 1, max_attack = 5, reward = 1)  
 
 class Shop:
     def __init__(self, level, health, armor, min_attack, max_attack, goldgain):
@@ -46,13 +49,13 @@ shop = Shop(level = 1, health = 10, armor = 1, min_attack = 1, max_attack = 1, g
 
 #Character backstory
 in_town = True
-TownName = input("You arrive at the Drunken Dwarf, a pub on the outskirts of ____: (Town Name) ")
+character.hometown = input("You arrive at the Drunken Dwarf, a pub on the outskirts of ____: (Town Name) ")
 
 #Limit Town/Character names to a certain character count?
 
-print(f"You arrive at the Drunken Dwarf, a pub on the outskirts of {TownName}.")
+print(f"You arrive at the Drunken Dwarf, a pub on the outskirts of {character.hometown}.")
 print("You walk inside and see the bustling scene of travelers. The bartender looks towards you.")
-Character_Name = input("Hey, welcome back, I remember you! You're ___!: (Character Name) ")
+character.name = input("Hey, welcome back, I remember you! You're ___!: (Character Name) ")
 
 
 
@@ -60,7 +63,7 @@ Character_Alive = True
 #While the character is alive, the game loop will run. First-time setup should happen before this loop
 while Character_Alive == True:
 
-    print(f"You're {Character_Name}, a level {character.level} character with {character.gold} gold.")
+    print(f"You're {character.name}, a level {character.level} character with {character.gold} gold.")
     print(f"You have {character.health}/{character.max_health} health, {character.armor} armor, {character.priority} priority, and deal {character.min_attack} to {character.max_attack} damage.")
     print(" ")
     action = input("--What would you like to do? (fight, heal, shop, quit): ").lower()
@@ -99,11 +102,11 @@ while Character_Alive == True:
 
 
     if action == "fight":
+        in_combat = True
 
-        #Resetting monster's health to max before the fight
+        #Resetting monster's health to max before the fight, should be changed
         monster.health = monster.max_health
 
-        in_combat = True
         print("""
 
 
@@ -111,71 +114,80 @@ while Character_Alive == True:
 
 
         """)
+        ####
+        turn_order = []
+        set_turn_order = {}
+
+        # Add character and monsters here
+        set_turn_order[character.name] = character.priority
+        set_turn_order[monster.name] = monster.priority
+
+        for entity in sorted(set_turn_order, key=set_turn_order.get, reverse=True):
+            turn_order.append(entity)
+            print(entity)
 
 
-        if in_combat == True:
-            while monster.health and character.health >= 1:
-                for monster_attack in range(2):
-                    damage = (random.randint(monster.min_attack, monster.max_attack)) - (character.armor)
-                    if damage <= 0:
-                        damage = 0
+        print(turn_order) ##### TESTING PURPOSES #####
 
-                character.health = (character.health - damage)
-
+        while in_combat == True and monster.health >= 1 and character.health >= 1:
+            for turn in turn_order:
+                print(" ")
+                print(f"""It is now {turn}'s turn!""")
+                print(" ")
                 time.sleep(0.5)
-                print(f"""
-                The monster attacks you, dealing {damage} damage.
-                You have {character.health}/{character.max_health} health left.
-                """)
+                turn_pass = False
+                while turn_pass == False:
+                    if turn == character.name:
+                        player_input = input("What would you like to do? (attack, inventory, run, quit): ").lower()
+                        if player_input == "attack":
+                            print("attack")
 
-                action = input("-- What do you do? (attack, run, quit): ").lower()
-                if action == "attack":
+                            damage = (random.randint(character.min_attack, character.max_attack)) - (monster.armor)
+                            if damage <= 0:
+                                damage = 0
 
-                    time.sleep(0.5)
-                    for character_attack in range(1):
-                        damage = (random.randint(character.min_attack, character.max_attack)) - (monster.armor)
+                            monster.health = (monster.health - damage)
+
+                            time.sleep(0.5)
+                            print(f"""
+                            You attack the monster, dealing {damage} damage.
+                            The monster has {monster.health}/{monster.max_health} health left.
+                            """)
+
+                            turn_pass = True
+
+                        if player_input == "inventory": #NOT COMPLETE
+                            print("inventory")
+                            turn_pass = True
+
+                        if player_input == "run": # NOT COMPLETE
+                            character.health = 1
+                            character.gold = (character.gold * 0.5)
+                            print(" ")
+                            print("You have run away from the fight. You have lost half your gold, and your health is low.")
+                            print(" ")
+                            in_combat = False
+                            turn_pass = True
+
+                        if player_input == "quit":
+                            quit()
+
+
+                    else:
+                        damage = (random.randint(monster.min_attack, monster.max_attack)) - (character.armor)
                         if damage <= 0:
                             damage = 0
+                        character.health = (character.health - damage)
 
-                    monster.health = (monster.health - damage)
-                    if monster.health <= 0:
-                        monster.health = 0
+                        time.sleep(0.5)
+                        print(f"""
+                        The monster attacks you, dealing {damage} damage.
+                        You have {character.health}/{character.max_health} health left.
+                        """)                        
 
-                    print(f"""
-                    You attack the monster, dealing {damage} damage.
-                    The monster has {monster.health}/{monster.max_health} health left.
-                    """)
-
-                if action == "run":
-                    character.health = 1
-                    character.gold = (character.gold * 0.5)
-                    print(" ")
-                    print("You have run away from the fight. You have lost half your gold, and your health is low.")
-                    print(" ")
-                    in_combat = False
-                    break        
-
-                if action == "quit": ##### TESTING PURPOSES TO BREAK #####
-                    quit()
-
-            else:
-                
-                if character.health <= 0:
-                    print("You have died! You must restart your adventure.")
-                    Character_Alive = False
-                    break
-
-                if monster.health <= 0:
-                    print(f"You won the fight! You gain {monster.reward} gold!")
-                    print(" ")
-                    print("Out of Combat")
-                    print("=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=")
-                    print(" ")
-                    print(" ")
-                    
-                    character.gold = round((character.gold + (monster.reward * character.gold_gain)), 2)
-                    in_combat = False
-        pass
+                        turn_pass = True
+                        print(f"TURN_PASS = {turn_pass}")
+                        print(" ")
 
 
     if action == "shop":
