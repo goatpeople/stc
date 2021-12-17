@@ -22,7 +22,7 @@ class Character:
         self.max_attack = max_attack
         self.gold = gold
         self.gold_gain = gold_gain
-character = Character(name = "Default", hometown = "Default", level = 1, health = 50, max_health = 50, armor = 0, priority = 500, min_attack = 40, max_attack = 50, gold = 500, gold_gain = 1)
+character = Character(name = "Default", hometown = "Default", level = 1, health = 50, max_health = 50, armor = 0, priority = 500, min_attack = 5, max_attack = 10, gold = 500, gold_gain = 1)
 
 class Monster:
     def __init__(self, name, level, health, max_health, armor, priority, min_attack, max_attack, reward):
@@ -59,9 +59,9 @@ character.name = input("Hey, welcome back, I remember you! You're ___!: (Charact
 
 
 
-Character_Alive = True
+character_alive = True
 #While the character is alive, the game loop will run. First-time setup should happen before this loop
-while Character_Alive == True:
+while character_alive == True:
 
     print(f"You're {character.name}, a level {character.level} character with {character.gold} gold.")
     print(f"You have {character.health}/{character.max_health} health, {character.armor} armor, {character.priority} priority, and deal {character.min_attack} to {character.max_attack} damage.")
@@ -75,7 +75,8 @@ while Character_Alive == True:
                 #SAVE GAME HERE, SAVE FILE TO DESKTOP
             #else:
                 #break
-        Character_Alive = False
+        character_alive = False
+        death_reason = "random"
 
 
     if action == "heal":
@@ -117,6 +118,7 @@ while Character_Alive == True:
         ####
         turn_order = []
         set_turn_order = {}
+        player_input = ""
 
         # Add character and monsters here
         set_turn_order[character.name] = character.priority
@@ -131,63 +133,72 @@ while Character_Alive == True:
 
         while in_combat == True and monster.health >= 1 and character.health >= 1:
             for turn in turn_order:
-                print(" ")
-                print(f"""It is now {turn}'s turn!""")
-                print(" ")
-                time.sleep(0.5)
-                turn_pass = False
-                while turn_pass == False:
-                    if turn == character.name:
-                        player_input = input("What would you like to do? (attack, inventory, run, quit): ").lower()
-                        if player_input == "attack":
-                            print("attack")
+                if in_combat == True and monster.health >= 1 and character.health >= 1 and player_input != "run":
+                    print(" ")
+                    print(f"""It is now {turn}'s turn!""")
+                    print(" ")
+                    time.sleep(0.5)
+                    turn_pass = False
+                    while turn_pass == False:
+                        if turn == character.name:
+                            player_input = input("What would you like to do? (attack, inventory, run, quit): ").lower()
+                            if player_input == "attack":
+                                print("attack")
 
-                            damage = (random.randint(character.min_attack, character.max_attack)) - (monster.armor)
-                            if damage <= 0:
-                                damage = 0
+                                damage = (random.randint(character.min_attack, character.max_attack)) - (monster.armor)
+                                if damage <= 0:
+                                    damage = 0
 
-                            monster.health = (monster.health - damage)
+                                monster.health = (monster.health - damage)
+                                if monster.health < 0:
+                                    monster.health = 0
 
-                            time.sleep(0.5)
-                            print(f"""
-                            You attack the monster, dealing {damage} damage.
-                            The monster has {monster.health}/{monster.max_health} health left.
-                            """)
+                                time.sleep(0.5)
+                                print(f"""
+                                You attack the monster, dealing {damage} damage.
+                                The monster has {monster.health}/{monster.max_health} health left.
+                                """)
+
+                                turn_pass = True
+
+                            if player_input == "inventory": #NOT COMPLETE, will expand when item system is introduced
+                                print("inventory")
+                                turn_pass = True
+
+                            if player_input == "run":
+                                # if boss_room == True:
+                                    #print("You cannot run in the boss room.")
+                                # else:
+                                character.health -= 10
+                                character.gold = (character.gold * 0.5)
+                                print(" ")
+                                print("You have run away from the fight. You have lost half your gold, and you lose 10 health.")
+                                print(" ")
+                                in_combat = False
+                                turn_pass = True
+
+                            if player_input == "quit":
+                                quit()
+
+
+                        else:
+                            if player_input != "run" or monster.health > 0 or character.health > 0:
+                                damage = (random.randint(monster.min_attack, monster.max_attack)) - (character.armor)
+                                if damage <= 0:
+                                    damage = 0
+                                character.health = (character.health - damage)
+                                if character.health < 0:
+                                    character.health = 0                                
+
+                                time.sleep(0.5)
+                                print(f"""
+                                The monster attacks you, dealing {damage} damage.
+                                You have {character.health}/{character.max_health} health left.
+                                """)                        
 
                             turn_pass = True
-
-                        if player_input == "inventory": #NOT COMPLETE
-                            print("inventory")
-                            turn_pass = True
-
-                        if player_input == "run": # NOT COMPLETE
-                            character.health = 1
-                            character.gold = (character.gold * 0.5)
+                            print(f"TURN_PASS = {turn_pass}")
                             print(" ")
-                            print("You have run away from the fight. You have lost half your gold, and your health is low.")
-                            print(" ")
-                            in_combat = False
-                            turn_pass = True
-
-                        if player_input == "quit":
-                            quit()
-
-
-                    else:
-                        damage = (random.randint(monster.min_attack, monster.max_attack)) - (character.armor)
-                        if damage <= 0:
-                            damage = 0
-                        character.health = (character.health - damage)
-
-                        time.sleep(0.5)
-                        print(f"""
-                        The monster attacks you, dealing {damage} damage.
-                        You have {character.health}/{character.max_health} health left.
-                        """)                        
-
-                        turn_pass = True
-                        print(f"TURN_PASS = {turn_pass}")
-                        print(" ")
 
 
     if action == "shop":
@@ -312,16 +323,17 @@ while Character_Alive == True:
 
 #Use this for the "quit" death message.
 #if death_reason == "quit"
-random_death_message = random.randint(1, 4)
-if random_death_message == 1:
-    random_death_message = "from a heart attack!"
-if random_death_message == 2:
+if death_reason == "random":
+    random_death_message = random.randint(1, 4)
+    if random_death_message == 1:
+        random_death_message = "from a heart attack!"
+    if random_death_message == 2:
         random_death_message = "from a feral kitten! Yikes."
-if random_death_message == 3:
-    random_death_message = "by being smothered under the biggest ball of yarn."
-if random_death_message == 4:
-    random_death_message = "due to your own misuse of matches."
-print(f"You have died {random_death_message}")
+    if random_death_message == 3:
+        random_death_message = "by being smothered under the biggest ball of yarn."
+    if random_death_message == 4:
+        random_death_message = "due to your own misuse of matches."
+    print(f"You have died {random_death_message}")
 
 
 #    COMMENTS DOWN BELOW:
