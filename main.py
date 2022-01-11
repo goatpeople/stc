@@ -1,6 +1,6 @@
 import random
 import time
-
+import item
 
 #Clearing Terminal of old text
 zz=20
@@ -307,6 +307,13 @@ while character_alive == True:
                     else:
                         shopinput = "return"
 
+
+    if action == "inventory":
+        in_inventory = True
+        while in_inventory == True:
+            item.inventory.add_item(sword)
+            item.inventory.print_bag()
+            in_inventory = False
     pass
 
 
