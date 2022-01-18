@@ -1,110 +1,152 @@
-# I'll be making comments to explain my thought process
-# For clarity on questions, I'll mark them like this:
-
-### QUESTION HERE
-
 class Equip():
-  def __init__(self, name, slot):
-    self.name = name   
-    self.slot = slot
+    def __init__(self, name, desc, level, max_health, armor, priority, min_attack, max_attack, slot):
+        self.name = name
+        self.description = desc     
+        self.level = level
+        self.max_health = max_health
+        self.armor = armor
+        self.priority = priority
+        self.min_attack = min_attack
+        self.max_attack = max_attack
+        self.slot = slot
 
-class Inventory(object):    
+    def __repr__(self):
+        return self.name
+
+class Inventory(object):
   def __init__(self):
     self.bag = {}
     self.equipped = {
-        "weapon" : "",
-        "shield" : "",
+        "Weapon" : None,
+        "Shield" : None,
+        "Head" : None,
+        "Chest" : None,
+        "Legs" : None,
+        "Shoes" : None,
     }
-inventory = Inventory()
 
-# These are the items that can be equipped and stored in the bag, all with the "weapon" slot. I use that to access the "weapon" key in the 'inventory.equipped' dict.
-spear = Equip(
-  name = "Spear",
-  slot = "weapon"
-)
-rope = Equip(
-  name = "Rope",
-  slot = "weapon"
-)
-hammer = Equip(
-  name = "Hammer",
-  slot = "weapon"
-)
-sword = Equip(
-  name = "Sword",
-  slot = "weapon"
-)
+  def add_item(self, item):
+    if item in inventory.bag:
+      inventory.bag[item] += 1
+    else:
+      inventory.bag[item] = 1
 
 
-def add_item(item):
-  if item in inventory.bag:
-    inventory.bag[item] += 1
-  else:
-    inventory.bag[item] = 1
+  def equip_item(self, item):
+    """
+    Remove supplied item from the inventory bag (if not already equipped) and
+    equip it into the correct slot.
 
+    :param item(Equip): the item to equip.
+    """
+    if item not in inventory.bag:
+      slot_item = inventory.equipped[item.slot]
+      if slot_item is not None and item.name == slot_item.name:
+        print(f"Can't equip: the {item.name} is already equipped as a {item.slot}.")
+        return
+        
+      print(f"Can't equip: you have no {item.name} to equip!")
+      return
 
-def equip_item(item):
-  if item in inventory.bag and inventory.bag[item] > 0:
-    # My goal is to remove the currently equipped item and put it back in the bag.
-
-    # I get a KeyError on the 'rope' object for modifying the dictionary twice (If I understand that corrently)
-    # This is the issue I am stuck on. I've tried creating a temporary dictionary, modifying that, and returning it, but I doubt I'm doing it correctly.
-    # I just don't know how to get around the KeyError without making a mess.
-
-    ### What would a proper function look like to accomplish this goal?
-    if inventory.equipped[item.slot] != "":
-      removed_item = inventory.equipped[item.slot]
-      inventory.bag[removed_item] += 1
+    slot_item = inventory.equipped[item.slot]
+    if slot_item is not None:
+      inventory.add_item(slot_item)
 
     inventory.bag[item] -= 1
-    inventory.equipped[item.slot] = item
-    
-  else:
-    print("Item is not in your inventory.")
-
-
-def print_bag():
-  print('\t'.join(['Name', 'Quantity']))
-  print('\t'.join(['----', '--------']))
-
-  # My goal here is one of two things:
-  # 1) Mainly, to print whatever items are in the bag and the quantity.
-  # 2) I thought it would be sneaky to clear all "0" quantity items here, because it would only ever display the bag when it is printing.
-  #    That way, the bag doesn't remember what items AREN'T in the bag and it looks cleaner, without removing 0 items from the dictionary
-
-  # I'm not sure if creating a temporary dictionary is a good idea here or not. Like the 'equip_item', I'm trying to get around a KeyError.
-  # At this point, I don't know the proper way to be able to modify separate dictionaries and have them operate in unison.
-  
-  ### Would it be a good idea to clear "0" values in the 'inventory.bag' dict after modifying it in any way (defining like a check_empty function and plugging that in), or clear them only when printing?
-  ### Like the 'equip_item' function above (line 46), what would be the proper way to modify a dictionary multiple times without getting a KeyError?
-
-  # I can feel that I am close, but after trying to figure this one issue out for the past week, I've run out of ideas.
-  temp_dict = inventory.bag
-  for item in inventory.bag:
     if inventory.bag[item] == 0:
-      temp_dict = inventory.bag
-      temp_dict.pop(item)
-      return temp_dict
-    print('\t'.join([str(item) for item in [item.name, temp_dict[item]]]))
+      del inventory.bag[item]
+    inventory.equipped[item.slot] = item
+
+
+  def print_bag(self):
+    """
+    Print the contents of the inventory bag.
+    """
+    print('\t'.join(['Name', 'Qty', ' Slot']))
+    print('\t'.join(['----', '---', '------']))
+    for item in inventory.bag:
+      print('\t'.join([item.name, f"{inventory.bag[item]}", item.slot]))
+    print(" ")
+
+  def print_equipped(self):
+    print(f"""
+                  ______
+                 | Head |
+                   {inventory.equipped["Head"]}
+                 |______|     
+            =====  Chest  =====
+            |    | {inventory.equipped["Chest"]}     
+            |    |      |      |   Shield
+    Weapon  |    |      |      |    {inventory.equipped["Shield"]}
+    {inventory.equipped["Weapon"]}                        
+            |    ========      |
+                 | Legs |
+                   {inventory.equipped["Legs"]}
+                 |      |
+                 |      |
+            =====  Shoes ===== 
+                   {inventory.equipped["Shoes"]}
+    """)  
   
+  def inspect_item(self, input):
+    cased_input = input.lower().title()
+    if cased_input in inventory.equipped:
+      item = inventory.equipped[cased_input]
+      if item == None:
+        print(f'You have nothing equipped in your "{cased_input}" slot.')
+        return
+      print(f"Name:         {item.name}")
+      print(f"Description:  {item.slot}")
+    else:
+      print(f'Cannot find anything in your "{cased_input}" slot.')
+    
 
-add_item(sword)
-add_item(hammer)
-add_item(rope)
-add_item(spear)
+inventory = Inventory()
 
-# All four items are in the bag and properly displayed.
-print_bag()
+spear = Equip(
+  name = "Spear",
+  desc = "A pointy stick",
+  level = 0,
+  max_health = 0,
+  armor = 0,
+  priority = 0,
+  min_attack = 0,
+  max_attack = 0,
+  slot = "Weapon"
+)
 
+rope = Equip(
+  name = "Rope",
+  desc = "A tangle of plant fibers",
+  level = 0,
+  max_health = 0,
+  armor = 0,
+  priority = 0,
+  min_attack = 0,
+  max_attack = 0,
+  slot = "Weapon"
+)
 
-# First item is equipped, gets removed from the bag and placed into the 'inventory.equipped' dict with no problem, as expected.
-equip_item(spear)
-print_bag()
-print("")
+hammer = Equip(
+  name = "Hammer",
+  desc = "A cracked blacksmith tool",
+  level = 0,
+  max_health = 0,
+  armor = 0,
+  priority = 0,
+  min_attack = 0,
+  max_attack = 0,
+  slot = "Weapon"
+)
 
-# This is where we run into the KeyError issue for modifying the dict too many times.
-equip_item(rope)
-print_bag()
-
-### I created this new file in order to try and import the functions to the 'main' loop, but how does the Inventory class (and item objects) get imported as well?
-#   I was having an issue with accessing the items when on a different file. The functions import perfectly, but I don't know if objects are able to be imported. (I hope I am using the terminology correctly!)
+sword = Equip(
+  name = "Sword",
+  desc = "A twiggy poker",
+  level = 0,
+  max_health = 0,
+  armor = 0,
+  priority = 0,
+  min_attack = 0,
+  max_attack = 0,
+  slot = "Weapon"
+)

@@ -1,28 +1,17 @@
 import random
 import time
-import item
 
+from character import character
+import item
+from item import spear, sword, rope, hammer
+
+inventory = item.Inventory()
 #Clearing Terminal of old text
 zz=20
 while zz > 0:
     print(" ")
     zz -= 1
 
-
-class Character:
-    def __init__(self, name, hometown, level, health, max_health, armor, priority, min_attack, max_attack, gold, gold_gain):
-        self.name = name   
-        self.hometown = hometown     
-        self.level = level
-        self.health = health
-        self.max_health = max_health
-        self.armor = armor
-        self.priority = priority
-        self.min_attack = min_attack
-        self.max_attack = max_attack
-        self.gold = gold
-        self.gold_gain = gold_gain
-character = Character(name = "Default", hometown = "Default", level = 1, health = 50, max_health = 50, armor = 0, priority = 500, min_attack = 5, max_attack = 10, gold = 500, gold_gain = 1)
 
 class Monster:
     def __init__(self, name, level, health, max_health, armor, priority, min_attack, max_attack, reward):
@@ -311,8 +300,7 @@ while character_alive == True:
     if action == "inventory":
         in_inventory = True
         while in_inventory == True:
-            item.inventory.add_item(sword)
-            item.inventory.print_bag()
+            inventory.add_item(spear)
             in_inventory = False
     pass
 
@@ -324,24 +312,6 @@ while character_alive == True:
     # Yes? Show death stats
     # No? print("In a hurry I see...")
 # Finally: Show death reason.
-
-#if death_reason == "dungeon"
-    #You have died from a SKELETON/SLIME/ORC/ETC
-
-#Use this for the "quit" death message.
-#if death_reason == "quit"
-if death_reason == "random":
-    random_death_message = random.randint(1, 4)
-    if random_death_message == 1:
-        random_death_message = "from a heart attack!"
-    if random_death_message == 2:
-        random_death_message = "from a feral kitten! Yikes."
-    if random_death_message == 3:
-        random_death_message = "by being smothered under the biggest ball of yarn."
-    if random_death_message == 4:
-        random_death_message = "due to your own misuse of matches."
-    print(f"You have died {random_death_message}")
-
 
 #    COMMENTS DOWN BELOW:
 #
