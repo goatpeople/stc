@@ -1,5 +1,3 @@
-import item
-
 class Character:
     def __init__(self, name, hometown, level, health, max_health, armor, priority, min_attack, max_attack, gold, gold_gain):
         self.name = name   
@@ -14,6 +12,20 @@ class Character:
         self.gold = gold
         self.gold_gain = gold_gain
 
+    def print_stats(self):
+        print(f"""
+        Character Stats
+        ---------------------
+        Current Health: {character.health}
+        Maximum Health: {character.max_health}
+        Armor:          {character.armor}
+        Priority:       {character.priority}
+        Minimum Attack: {character.min_attack}
+        Maximum Attack: {character.max_attack}
+        """)
+
+
+# Default character stats
 character = Character(
     name = "Default",
     hometown = "Default",
