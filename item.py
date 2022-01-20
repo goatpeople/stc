@@ -1,3 +1,5 @@
+from character import character
+
 class Equip():
     def __init__(self, name, desc, level, max_health, armor, priority, min_attack, max_attack, slot):
         self.name = name
@@ -35,7 +37,7 @@ class Inventory(object):
   def equip_item(self, item):
     """
     Remove supplied item from the inventory bag (if not already equipped) and
-    equip it into the correct slot.
+    equip it into the correct slot. Adjusts character's stats as necessary.
 
     :param item(Equip): the item to equip.
     """
@@ -47,15 +49,36 @@ class Inventory(object):
         
       print(f"Can't equip: you have no {item.name} to equip!")
       return
-
+    if item.level < character.level:
+      print(f"This item requires level {item.level}, whereas your character is only level {character.level}.")
+      return
+      
     slot_item = inventory.equipped[item.slot]
     if slot_item is not None:
       inventory.add_item(slot_item)
+
+      # Removing previously equipped item's stats
+      character.max_health -= slot_item.max_health
+      character.health -= slot_item.max_health
+      # Making sure the character doesn't die as a result of removing a health item
+      if character.health <= 0:
+        character.health = 1
+      character.armor -= slot_item.armor
+      character.priority -= slot_item.priority
+      character.min_attack -= slot_item.min_attack
+      character.max_attack -= slot_item.max_attack
 
     inventory.bag[item] -= 1
     if inventory.bag[item] == 0:
       del inventory.bag[item]
     inventory.equipped[item.slot] = item
+
+    # Adding the new stats to the character
+    character.max_health += item.max_health
+    character.armor += item.armor
+    character.priority += item.priority
+    character.min_attack += item.min_attack
+    character.max_attack += item.max_attack
 
 
   def print_bag(self):
@@ -84,10 +107,10 @@ class Inventory(object):
                    {inventory.equipped["Legs"]}
                  |      |
                  |      |
-            =====  Shoes ===== 
+            =====  Shoes =====
                    {inventory.equipped["Shoes"]}
     """)  
-  
+ 
   def inspect_item(self, input):
     cased_input = input.lower().title()
     if cased_input in inventory.equipped:
