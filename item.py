@@ -122,54 +122,205 @@ class Inventory(object):
       print(f"Description:  {item.slot}")
     else:
       print(f'Cannot find anything in your "{cased_input}" slot.')
-    
+
+  def __str__(self):
+    return self.__repr__()
+
+  def __repr__(self):
+    out = "bag: "
+    for b in self.bag:
+      out + f"{b} {self.bag[b]}"
+    return
+
 
 inventory = Inventory()
 
+
+# Weapon
 spear = Equip(
   name = "Spear",
-  desc = "A pointy stick",
-  level = 0,
-  max_health = 0,
+  desc = "A pointy stick.",
+  level = 1,
+  max_health = 5,
   armor = 0,
-  priority = 0,
-  min_attack = 0,
-  max_attack = 0,
+  priority = 10,
+  min_attack = 3,
+  max_attack = 5,
   slot = "Weapon"
 )
 
 rope = Equip(
   name = "Rope",
-  desc = "A tangle of plant fibers",
-  level = 0,
-  max_health = 0,
+  desc = "A tangle of plant fibers.",
+  level = 2,
+  max_health = 10,
   armor = 0,
-  priority = 0,
-  min_attack = 0,
-  max_attack = 0,
+  priority = 15,
+  min_attack = 7,
+  max_attack = 9,
   slot = "Weapon"
 )
 
 hammer = Equip(
   name = "Hammer",
-  desc = "A cracked blacksmith tool",
-  level = 0,
-  max_health = 0,
+  desc = "A cracked blacksmith tool.",
+  level = 4,
+  max_health = 20,
   armor = 0,
-  priority = 0,
-  min_attack = 0,
-  max_attack = 0,
+  priority = 25,
+  min_attack = 8,
+  max_attack = 16,
   slot = "Weapon"
 )
 
 sword = Equip(
   name = "Sword",
-  desc = "A twiggy poker",
-  level = 0,
-  max_health = 0,
+  desc = "A twiggy poker.",
+  level = 6,
+  max_health = 30,
   armor = 0,
-  priority = 0,
+  priority = 40,
+  min_attack = 15,
+  max_attack = 20,
+  slot = "Weapon"
+)
+
+
+# Shield
+buckler = Equip(
+  name = "Buckler",
+  desc = "A small shield, about the size of a quarter.",
+  level = 1,
+  max_health = 20,
+  armor = 3,
+  priority = 10,
   min_attack = 0,
   max_attack = 0,
-  slot = "Weapon"
+  slot = "Shield"
+  )
+
+tower_shield = Equip(
+  name = "Tower Shield",
+  desc = "The biggest shield there is, too bad you can't move it...",
+  level = 4,
+  max_health = 50,
+  armor = 8,
+  priority = 20,
+  min_attack = 0,
+  max_attack = 0,
+  slot = "Shield"
+)
+
+
+# Head
+top_hat = Equip(
+  name = "Top Hat",
+  desc = "You expect yourself to be fancy, but nothing can elevate your class.",
+  level = 1,
+  max_health = 3,
+  armor = 2,
+  priority = 5,
+  min_attack = 0,
+  max_attack = 0,
+  slot = "Head"
+)
+
+sombrero = Equip(
+  name = "Sombrero",
+  desc = "Normally a good sun hat, but yours is poked full of holes.",
+  level = 3,
+  max_health = 8,
+  armor = 5,
+  priority = 10,
+  min_attack = 0,
+  max_attack = 0,
+  slot = "Head"
+)
+
+# Chest
+poncho = Equip(
+  name = "Poncho",
+  desc = "Good for keeping the rain out.",
+  level = 1,
+  max_health = 0,
+  armor = 1,
+  priority = 3,
+  min_attack = 0,
+  max_attack = 0,
+  slot = "Chest"
+)
+
+chainmail = Equip(
+  name = "Chainmail",
+  desc = "The rings are made from an apprentice blacksmith. You only grabbed it since it was on sale!",
+  level = 4,
+  max_health = 10,
+  armor = 5,
+  priority = 8,
+  min_attack = 0,
+  max_attack = 0,
+  slot = "Chest"
+)
+
+bone_chestplate = Equip(
+  name = "Bone Chestplate",
+  desc = "This chestplate is made from the various bones of... who knows! Let's hope they drank their milk.",
+  level = 6,
+  max_health = 20,
+  armor = 10,
+  priority = 20,
+  min_attack = 0,
+  max_attack = 0,
+  slot = "Chest"
+)
+
+
+# Legs
+shorts = Equip(
+  name = "Shorts",
+  desc = "You can feel the breeze run across your legs in these.",
+  level = 2,
+  max_health = 5,
+  armor = 2,
+  priority = 5,
+  min_attack = 0,
+  max_attack = 0,
+  slot = "Legs"
+)
+
+cloth_pants = Equip(
+  name = "Cloth pants",
+  desc = "You took these off of someone's clothesline. Gently used?",
+  level = 4,
+  max_health = 10,
+  armor = 5,
+  priority = 10,
+  min_attack = 0,
+  max_attack = 0,
+  slot = "Legs"
+)
+
+#Shoes
+sandals = Equip(
+  name = "Sandals",
+  desc = "The tag states: Please do not wear socks with these.",
+  level = 2,
+  max_health = 5,
+  armor = 4,
+  priority = 5,
+  min_attack = 0,
+  max_attack = 0,
+  slot = "Shoes"
+)
+
+leather_boots = Equip(
+  name = "Leather Boots",
+  desc = 'Your basic shoe, but you have to wonder, what animal made this "leather"?',
+  level = 3,
+  max_health = 10,
+  armor = 8,
+  priority = 10,
+  min_attack = 0,
+  max_attack = 0,
+  slot = "Shoes"
 )
