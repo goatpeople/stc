@@ -2,8 +2,8 @@ import random
 import time
 
 from character import character
+import monster
 import item
-from item import spear, sword, rope, hammer
 
 inventory = item.Inventory()
 #Clearing Terminal of old text
@@ -12,19 +12,6 @@ while zz > 0:
     print(" ")
     zz -= 1
 
-
-class Monster:
-    def __init__(self, name, level, health, max_health, armor, priority, min_attack, max_attack, reward):
-        self.name = name
-        self.level = level
-        self.health = health
-        self.max_health = max_health
-        self.armor = armor
-        self.priority = priority
-        self.min_attack = min_attack
-        self.max_attack = max_attack
-        self.reward = reward
-monster = Monster(name = "Monster", level = 1, health = 10, max_health = 10, armor = 0, priority = 5, min_attack = 1, max_attack = 5, reward = 1)  
 
 class Shop:
     def __init__(self, level, health, armor, min_attack, max_attack, goldgain):
@@ -36,15 +23,18 @@ class Shop:
         self.goldgain = goldgain
 shop = Shop(level = 1, health = 10, armor = 1, min_attack = 1, max_attack = 1, goldgain = 1)
 
-#Character backstory
-in_town = True
-character.hometown = input("You arrive at the Drunken Dwarf, a pub on the outskirts of ____: (Town Name) ")
 
-#Limit Town/Character names to a certain character count?
+skip_intro = True
+if skip_intro == False:
+    #Character backstory
+    in_town = True
+    character.hometown = input("You arrive at the Drunken Dwarf, a pub on the outskirts of ____: (Town Name) ")
 
-print(f"You arrive at the Drunken Dwarf, a pub on the outskirts of {character.hometown}.")
-print("You walk inside and see the bustling scene of travelers. The bartender looks towards you.")
-character.name = input("Hey, welcome back, I remember you! You're ___!: (Character Name) ")
+    #Limit Town/Character names to a certain character count?
+
+    print(f"You arrive at the Drunken Dwarf, a pub on the outskirts of {character.hometown}.")
+    print("You walk inside and see the bustling scene of travelers. The bartender looks towards you.")
+    character.name = input("Hey, welcome back, I remember you! You're ___!: (Character Name) ")
 
 
 
@@ -90,7 +80,7 @@ while character_alive == True:
 
         pass
 
-
+### FIGHT IS BROKEN DUE TO NEW MONSTER FILE, REVAMP WITH MAP FILE FOR DUNGEON EXPERIENCE
     if action == "fight":
         in_combat = True
 
@@ -192,9 +182,9 @@ while character_alive == True:
 
     if action == "shop":
         shopinput = "buy"
-        while shopinput != "return":
+        while shopinput != "menu":
             print(" ")
-            shopinput = input("Welcome to the shop! You may buy/upgrade stats here. What would you like to do? (buy, return): ").lower()
+            shopinput = input("Welcome to the shop! You may buy/upgrade stats here. What would you like to do? (buy, menu): ").lower()
             print(" ")
             if shopinput == "buy":
                 
@@ -204,7 +194,7 @@ while character_alive == True:
                 print(f"Min/Max Damage: {character.min_attack}/{character.max_attack} -- Costs {shop.min_attack}/{shop.max_attack}")
                 print(f"Gold Gain: {character.gold_gain} -- Costs {shop.goldgain}")
                 print(" ")
-                buyinput = input("What would you like to purchase? (health, level, damage, gold gain, return): ").lower()
+                buyinput = input("What would you like to purchase? (health, level, damage, gold gain, menu): ").lower()
                 print(" ")
 
                 if buyinput == "health":
@@ -217,14 +207,14 @@ while character_alive == True:
                             print(f"You have paid {shop.health} to increase your health. You now have {character.max_health} health!")
                             character.health = character.max_health
                             shop.health = (shop.health + 1)
-                            shopinput = "return"
+                            shopinput = "menu"
                         else:
                             print(" ")
                             print(f"You do not have enough gold upgrade your health. You need {shop.health} gold to upgrade, but you have {character.gold} gold.")
                             print(" ")
-                            shopinput = "return"
+                            shopinput = "menu"
                     else:
-                        shopinput = "return"
+                        shopinput = "menu"
 
 
                 if buyinput == "level":
@@ -234,7 +224,7 @@ while character_alive == True:
 
                 if buyinput == "damage":
                     print(" ")
-                    damageconfirm = input(f"You may purchase 1 Minimum Damage for {shop.min_attack}, and 1 Maximum Damage for {shop.max_attack}. Which would you like to purchase?: (min, max, return) ").lower()
+                    damageconfirm = input(f"You may purchase 1 Minimum Damage for {shop.min_attack}, and 1 Maximum Damage for {shop.max_attack}. Which would you like to purchase?: (min, max, menu) ").lower()
 
                     if damageconfirm == "min":
                         print(" ")
@@ -251,10 +241,10 @@ while character_alive == True:
                                 print(" ")
                                 print(f"Upgrading your Minimum damage will cost {shop.min_attack}, but you only have {character.gold}.")
                                 print(" ")
-                                shopinput = "return"
+                                shopinput = "menu"
                         
                         else:
-                            shopinput = "return"
+                            shopinput = "menu"
                     if damageconfirm == "max":  
                         print(" ")
                         maxconfirm = input(f"You have {character.gold}, and 1 Maximum Damage costs {shop.max_attack}. Would you like to upgrade?: (yes, no) ").lower()
@@ -266,16 +256,16 @@ while character_alive == True:
                                 shop.max_attack = (shop.max_attack + 1)
                                 print(f"You now have {character.max_attack} Maximum Damage and {character.gold} gold.")
                                 print(" ")
-                                shopinput = "return"
+                                shopinput = "menu"
                             else:
                                 print(" ")
                                 print(f"Upgrading your Maximum damage will cost {shop.max_attack}, but you only have {character.gold}.")
                                 print(" ")
-                                shopinput = "return"
+                                shopinput = "menu"
                         else:
-                            shopinput = "return"
+                            shopinput = "menu"
                     else:
-                        shopinput = "return"  
+                        shopinput = "menu"  
 
                 if buyinput == "gold gain":
                     print(" ")
@@ -286,22 +276,55 @@ while character_alive == True:
                             character.gold_gain = round((character.gold_gain + .1), 1)
                             print(f"You have paid {shop.goldgain} gold to increase your gold gain. You now have {round(character.gold_gain,1)}x increased gold gain!")
                             shop.goldgain = (shop.goldgain * 1.7)
-                            shopinput = "return"
+                            shopinput = "menu"
 
                         else:
                             print(" ")
                             print(f"You do not have enough gold upgrade your health. You need {shop.goldgain} gold to upgrade, but you have {character.gold} gold.")
                             print(" ")
-                            shopinput = "return"                            
+                            shopinput = "menu"                            
                     else:
-                        shopinput = "return"
+                        shopinput = "menu"
 
 
     if action == "inventory":
         in_inventory = True
         while in_inventory == True:
-            inventory.add_item(spear)
-            in_inventory = False
+            inventory_input = input("You are now looking in your inventory. What would you like to do? (bag, equipped, back) ")
+
+            if inventory_input == "bag":
+                print("You are now looking in your bag. You have:")
+                inventory.print_bag()
+
+
+            if inventory_input == "equipped":
+                print("")
+                print("You are now looking at your equipped items. You have:")
+                inventory.print_equipped()
+                print("")
+                print("")
+                equipped_input = input("Would you like to inspect an item, or go back? (inspect, back) ").lower()
+                if equipped_input == "inspect":
+                    inspect_input = input("Which slot would you like to inspect? (Head, Chest, Shield, Weapon, Legs, Shoes) ").lower()
+                    if inspect_input == "head":
+                        inventory.inspect_item("head")
+                    if inspect_input == "chest":
+                        inventory.inspect_item("chest")
+                    if inspect_input == "shield":
+                        inventory.inspect_item("shield")
+                    if inspect_input == "weapon":
+                        inventory.inspect_item("weapon")
+                    if inspect_input == "legs":
+                        inventory.inspect_item("legs")
+                    if inspect_input == "shoes":
+                        inventory.inspect_item("shoes")         
+                    print("")                                                                                               
+                    pass
+
+            if inventory_input == "back":
+                in_inventory = False   
+                print("")
+            pass
     pass
 
 
