@@ -2,7 +2,7 @@ import random
 import time
 
 from character import character
-import monster
+from monster import rat, slime, skeleton, vulture, ogre
 import item
 
 inventory = item.Inventory()
@@ -84,8 +84,38 @@ while character_alive == True:
     if action == "fight":
         in_combat = True
 
+#   This can be moved to another file and pushed into a function (Generate Dungeon Level?) "eventually"
+        dungeon_difficulty = 6
+
+        dungeon_choice = random.random()
+        
+        print(f"TESTING PURPOSES - Dungeon_Choice = {dungeon_choice}")
+        if dungeon_difficulty <= 2:
+            if dungeon_choice <= .5:
+                enemy = rat
+            else:
+                enemy = slime
+        if dungeon_difficulty <= 3 and dungeon_difficulty > 2:
+            if dungeon_choice <= .5:
+                enemy = slime
+            else:
+                enemy = skeleton
+        if dungeon_difficulty <= 5 and dungeon_difficulty > 3:
+            if dungeon_choice <= .5:
+                enemy = skeleton
+            else:
+                enemy = vulture
+        if dungeon_difficulty <= 8 and dungeon_difficulty > 5:
+            if dungeon_choice <= .5:
+                enemy = vulture
+            else:
+                enemy = ogre
+        if dungeon_difficulty > 8:
+            enemy = ogre
+
+
         #Resetting monster's health to max before the fight, should be changed
-        monster.health = monster.max_health
+        enemy.health = enemy.max_health
 
         print("""
 
@@ -101,7 +131,7 @@ while character_alive == True:
 
         # Add character and monsters here
         set_turn_order[character.name] = character.priority
-        set_turn_order[monster.name] = monster.priority
+        set_turn_order[enemy.name] = enemy.priority
 
         for entity in sorted(set_turn_order, key=set_turn_order.get, reverse=True):
             turn_order.append(entity)
@@ -110,9 +140,9 @@ while character_alive == True:
 
         print(turn_order) ##### TESTING PURPOSES #####
 
-        while in_combat == True and monster.health >= 1 and character.health >= 1:
+        while in_combat == True and enemy.health >= 1 and character.health >= 1:
             for turn in turn_order:
-                if in_combat == True and monster.health >= 1 and character.health >= 1 and player_input != "run":
+                if in_combat == True and enemy.health >= 1 and character.health >= 1 and player_input != "run":
                     print(" ")
                     print(f"""It is now {turn}'s turn!""")
                     print(" ")
@@ -124,18 +154,18 @@ while character_alive == True:
                             if player_input == "attack":
                                 print("attack")
 
-                                damage = (random.randint(character.min_attack, character.max_attack)) - (monster.armor)
+                                damage = (random.randint(character.min_attack, character.max_attack)) - (enemy.armor)
                                 if damage <= 0:
                                     damage = 0
 
-                                monster.health = (monster.health - damage)
-                                if monster.health < 0:
-                                    monster.health = 0
+                                enemy.health = (enemy.health - damage)
+                                if enemy.health < 0:
+                                    enemy.health = 0
 
                                 time.sleep(0.5)
                                 print(f"""
-                                You attack the monster, dealing {damage} damage.
-                                The monster has {monster.health}/{monster.max_health} health left.
+                                You attack the {enemy.name}, dealing {damage} damage.
+                                The {enemy.name} has {enemy.health}/{enemy.max_health} health left.
                                 """)
 
                                 turn_pass = True
@@ -161,17 +191,21 @@ while character_alive == True:
 
 
                         else:
-                            if player_input != "run" or monster.health > 0 or character.health > 0:
-                                damage = (random.randint(monster.min_attack, monster.max_attack)) - (character.armor)
+                            if player_input != "run" or enemy.health > 0 or character.health > 0:
+                                damage = (random.randint(enemy.min_attack, enemy.max_attack)) - (character.armor)
                                 if damage <= 0:
                                     damage = 0
                                 character.health = (character.health - damage)
                                 if character.health < 0:
-                                    character.health = 0                                
+                                    character.health = 0 
+                                    character_alive = False
+                                    # Death reason still needs to be added, currently unused
+                                    death_reason = "monster"
+                                    break                               
 
                                 time.sleep(0.5)
                                 print(f"""
-                                The monster attacks you, dealing {damage} damage.
+                                The {enemy.name} attacks you, dealing {damage} damage.
                                 You have {character.health}/{character.max_health} health left.
                                 """)                        
 
